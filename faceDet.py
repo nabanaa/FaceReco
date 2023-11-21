@@ -28,7 +28,7 @@ writer = create_video_writer(video_cap, "output.mp4")
 
 # interpreter = tf.lite.Interpreter("/tmp/lite_emotions_model_efficientnet_b0.tflite")
 
-with open("tmp/lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
+with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
     lite_model_content = f.read()
 # print("Wrote %sTFLite model of %d bytes." %
       # ("optimized " if optimize_lite_model else "", len(lite_model_content)))
