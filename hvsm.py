@@ -1,10 +1,3 @@
-from google.colab import drive
-import os
-import shutil
-import pandas as pd
-from matplotlib import image
-drive.mount("/content/drive", force_remount=True)
-
 import os
 from google.colab import output
 import ipywidgets as widgets
@@ -18,8 +11,8 @@ from google.auth import default
 creds, _ = default()
 import sys
 
-# Nazwa naszego arkusza do którego beda kierowac sie wszystkie zebrane wyniki
-arkusz = 'HvsM'
+# ID naszego arkusza do którego beda kierowac sie wszystkie zebrane wyniki
+arkusz = '11sl6PCw_9n_WPeu1wKH5nSjmRbmelGyiHj8IYShOZdM'
 
 
 # Sciezka do zdjec, ktore chcemy wywolywac
@@ -45,7 +38,7 @@ def prawidlowosesja():
 #Funkcja obliczajaca procent prawidlowych odpowiedzi na podstawie google sheets
 def prawidlowosheets():
     gc = gspread.authorize(creds)
-    worksheet = gc.open(arkusz).sheet1
+    worksheet = gc.open_by_key(arkusz).sheet1
     rows = worksheet.get_all_values()
     last = rows[len(rows)-1:]
     if last[0][1] == "":
@@ -74,7 +67,7 @@ def prawidlowosheets():
 def delLast(b):
     global h
     gc = gspread.authorize(creds)
-    worksheet = gc.open(arkusz).sheet1
+    worksheet = gc.open_by_key(arkusz).sheet1
     rows = worksheet.get_all_values()
     column_values = [row for row in rows[1:]]
     last = column_values[h-2]
@@ -85,7 +78,7 @@ def delLast(b):
 #Funkcja generujaca liste zawierajaca wszystkie wczesniejsze ocenione zdjecia
 def ex_oceny():
     gc = gspread.authorize(creds)
-    worksheet = gc.open(arkusz).sheet1
+    worksheet = gc.open_by_key(arkusz).sheet1
     rows = worksheet.get_all_values()
     column_values = [row[0] for row in rows[1:]]
     return column_values
@@ -104,7 +97,7 @@ def ran():
 #Funkcja generujaca numer nowego wiersza do zapisu w google sheets
 def nowywiersz():
     gc = gspread.authorize(creds)
-    worksheet = gc.open(arkusz).sheet1
+    worksheet = gc.open_by_key(arkusz).sheet1
     rows = worksheet.get_all_values()
     nowy_wiersz = len(rows) + 1
     return nowy_wiersz
@@ -112,7 +105,7 @@ def nowywiersz():
 #Funkcja zapisujaca nazwe aktualnie ocenianego obrazka by go "zarezerwowac"
 def rezerwacja_komurki(nazwa):
     gc = gspread.authorize(creds)
-    worksheet = gc.open(arkusz).sheet1
+    worksheet = gc.open_by_key(arkusz).sheet1
     wiersz = nowywiersz()
     zasieg = "A" + str(wiersz) + ":A" + str(wiersz)
     cell_list = worksheet.range(zasieg)
@@ -124,7 +117,7 @@ def rezerwacja_komurki(nazwa):
 #Funkcja wypełniajaca zarezerwowany rzad wartosciami
 def wypelnienie_komurki(nazwa, gt, rev, wiersz):
     gc = gspread.authorize(creds)
-    worksheet = gc.open(arkusz).sheet1
+    worksheet = gc.open_by_key(arkusz).sheet1
     rows = worksheet.get_all_values()
     last = rows.pop()
     if len(last[1]) > 1:
@@ -347,8 +340,3 @@ display(widgets.HBox([ii], layout=widgets.Layout(justify_content='center')))
 
 display(widgets.HBox([button, button1, button2, button3, button4, button5], layout=widgets.Layout(justify_content='center')))
 display(widgets.HBox([button6,button7], layout=widgets.Layout(justify_content='center')))
-
-prawidlowosesja()
-
-prawidlowosheets()
-
