@@ -180,7 +180,7 @@ def happy(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Happy", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Happy", nowywiersz()-1)
+      wypelnienie_komurki(nazwa, klasa, "Happy", nowywiersz())
     HvsM[nazwa] = (klasa,"Happy")
     i = ran()
     klasa, nazwa = wywolanie(i)
