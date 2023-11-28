@@ -11,7 +11,7 @@ from google.auth import default
 creds, _ = default()
 import sys
 
-# ID naszego arkusza do którego beda kierowac sie wszystkie zebrane wyniki
+# Nazwa naszego arkusza do którego beda kierowac sie wszystkie zebrane wyniki
 arkusz = '11sl6PCw_9n_WPeu1wKH5nSjmRbmelGyiHj8IYShOZdM'
 
 
@@ -87,7 +87,7 @@ def ex_oceny():
 #upewnianie sie ze nie byl on juz wczesniej uzyty
 def ran():
     while True:
-        i = random.randrange(0, 15453)
+        i = random.randrange(0, (df.shape[0]))
         klasa, nazwa = wywolanie(i)
         if nazwa not in ex_oceny():
             break
