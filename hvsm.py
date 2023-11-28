@@ -201,7 +201,7 @@ def sad(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Sad", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Sad", nowywiersz()-1)
+      wypelnienie_komurki(nazwa, klasa, "Sad", nowywiersz())
     HvsM[nazwa] = (klasa,"Sad")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -220,7 +220,7 @@ def angry(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Angry", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Angry", nowywiersz()-1)
+      wypelnienie_komurki(nazwa, klasa, "Angry", nowywiersz())
     HvsM[nazwa] = (klasa,"Angry")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -240,7 +240,7 @@ def ahegao(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Ahegao", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Ahegao", nowywiersz()-1)
+      wypelnienie_komurki(nazwa, klasa, "Ahegao", nowywiersz())
     HvsM[nazwa] = (klasa,"Ahegao")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -260,7 +260,7 @@ def neutral(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Neutral", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Neutral", nowywiersz()-1)
+      wypelnienie_komurki(nazwa, klasa, "Neutral", nowywiersz())
     HvsM[nazwa] = (klasa,"Neutral")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -280,7 +280,7 @@ def surprise(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Surprise", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Surprise", nowywiersz()-1)
+      wypelnienie_komurki(nazwa, klasa, "Surprise", nowywiersz())
     HvsM[nazwa] = (klasa,"Surprise")
     i = ran()
     klasa, nazwa = wywolanie(i)
