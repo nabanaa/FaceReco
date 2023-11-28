@@ -13,6 +13,9 @@ from google.auth import default
 creds, _ = default()
 import sys
 
+
+imienazwisko=""
+
 # Nazwa naszego arkusza do którego beda kierowac sie wszystkie zebrane wyniki
 arkusz = '11sl6PCw_9n_WPeu1wKH5nSjmRbmelGyiHj8IYShOZdM'
 
@@ -114,33 +117,24 @@ def rezerwacja_komurki(nazwa):
     return wiersz
 
 #Funkcja wypełniajaca zarezerwowany rzad wartosciami
-def wypelnienie_komurki(nazwa, gt, rev, wiersz):
+def wypelnienie_komurki(nazwa, gt, rev, wiersz, varnazwisko="None"):
     gc = gspread.authorize(creds)
     worksheet = gc.open_by_key(arkusz).sheet1
     rows = worksheet.get_all_values()
     last = rows.pop()
-    if len(last[1]) > 1:
-      zasieg = "A" + str(wiersz) + ":C" + str(wiersz)
-      cell_list = worksheet.range(zasieg)
-      g = 0
-      for cell in cell_list:
-        if g == 0:
-          cell.value = nazwa
-        if g == 1:
-          cell.value = gt
-        if g == 2:
-          cell.value = rev
-        g = 1 + g
-    else:
-      zasieg = "B" + str(wiersz) + ":C" + str(wiersz)
-      cell_list = worksheet.range(zasieg)
-      g = 0
-      for cell in cell_list:
-        if g == 0:
-          cell.value = gt
-        if g == 1:
-          cell.value = rev
-        g = 1
+    zasieg = "A" + str(wiersz) + ":D" + str(wiersz)
+    cell_list = worksheet.range(zasieg)
+    g = 0
+    for cell in cell_list:
+      if g == 0:
+        cell.value = nazwa
+      if g == 1:
+        cell.value = gt
+      if g == 2:
+        cell.value = rev
+      if g == 3:
+        cell.value = varnazwisko
+      g = 1 + g
 
     worksheet.update_cells(cell_list)
 
@@ -177,7 +171,7 @@ def happy(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Happy", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Happy", nowywiersz())
+      wypelnienie_komurki(nazwa, klasa, "Happy", nowywiersz(),imienazwisko)
     HvsM[nazwa] = (klasa,"Happy")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -198,7 +192,7 @@ def sad(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Sad", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Sad", nowywiersz())
+      wypelnienie_komurki(nazwa, klasa, "Sad", nowywiersz(),imienazwisko)
     HvsM[nazwa] = (klasa,"Sad")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -217,7 +211,7 @@ def angry(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Angry", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Angry", nowywiersz())
+      wypelnienie_komurki(nazwa, klasa, "Angry", nowywiersz(),imienazwisko)
     HvsM[nazwa] = (klasa,"Angry")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -237,7 +231,7 @@ def ahegao(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Ahegao", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Ahegao", nowywiersz())
+      wypelnienie_komurki(nazwa, klasa, "Ahegao", nowywiersz(),imienazwisko)
     HvsM[nazwa] = (klasa,"Ahegao")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -257,7 +251,7 @@ def neutral(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Neutral", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Neutral", nowywiersz())
+      wypelnienie_komurki(nazwa, klasa, "Neutral", nowywiersz(),imienazwisko)
     HvsM[nazwa] = (klasa,"Neutral")
     i = ran()
     klasa, nazwa = wywolanie(i)
@@ -277,7 +271,7 @@ def surprise(b):
       rezerwacja_komurki(nazwa)
       wypelnienie_komurki(nazwa, klasa, "Surprise", h)
     else:
-      wypelnienie_komurki(nazwa, klasa, "Surprise", nowywiersz())
+      wypelnienie_komurki(nazwa, klasa, "Surprise", nowywiersz(),imienazwisko)
     HvsM[nazwa] = (klasa,"Surprise")
     i = ran()
     klasa, nazwa = wywolanie(i)
