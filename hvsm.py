@@ -184,7 +184,7 @@ def happy(b):
     HvsM[nazwa] = (klasa,"Happy")
     i = ran()
     klasa, nazwa = wywolanie(i)
-    h = rezerwacja_komurki(nazwa)
+    #h = rezerwacja_komurki(nazwa)
     jpg_path = load(i)
     with open(jpg_path, "rb") as image_file:
         image_data = image_file.read()
@@ -205,7 +205,7 @@ def sad(b):
     HvsM[nazwa] = (klasa,"Sad")
     i = ran()
     klasa, nazwa = wywolanie(i)
-    h = rezerwacja_komurki(nazwa)
+    #h = rezerwacja_komurki(nazwa)
     jpg_path = load(i)
     with open(jpg_path, "rb") as image_file:
         image_data = image_file.read()
@@ -224,7 +224,7 @@ def angry(b):
     HvsM[nazwa] = (klasa,"Angry")
     i = ran()
     klasa, nazwa = wywolanie(i)
-    h = rezerwacja_komurki(nazwa)
+    #h = rezerwacja_komurki(nazwa)
     jpg_path = load(i)
     with open(jpg_path, "rb") as image_file:
         image_data = image_file.read()
@@ -244,7 +244,7 @@ def ahegao(b):
     HvsM[nazwa] = (klasa,"Ahegao")
     i = ran()
     klasa, nazwa = wywolanie(i)
-    h = rezerwacja_komurki(nazwa)
+    #h = rezerwacja_komurki(nazwa)
     jpg_path = load(i)
     with open(jpg_path, "rb") as image_file:
         image_data = image_file.read()
@@ -264,7 +264,7 @@ def neutral(b):
     HvsM[nazwa] = (klasa,"Neutral")
     i = ran()
     klasa, nazwa = wywolanie(i)
-    h = rezerwacja_komurki(nazwa)
+    #h = rezerwacja_komurki(nazwa)
     jpg_path = load(i)
     with open(jpg_path, "rb") as image_file:
         image_data = image_file.read()
@@ -284,7 +284,7 @@ def surprise(b):
     HvsM[nazwa] = (klasa,"Surprise")
     i = ran()
     klasa, nazwa = wywolanie(i)
-    h = rezerwacja_komurki(nazwa)
+    #h = rezerwacja_komurki(nazwa)
     jpg_path = load(i)
     with open(jpg_path, "rb") as image_file:
         image_data = image_file.read()
