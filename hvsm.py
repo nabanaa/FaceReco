@@ -1,3 +1,5 @@
+from google.colab import drive
+drive.mount("/content/drive", force_remount=True)
 import os
 from google.colab import output
 import ipywidgets as widgets
@@ -21,7 +23,7 @@ HvsM = {}
 randomowe = []
 
 #sciezka do plikiu data klasyfikujacego zdjecia
-csv_path = '/content/drive/MyDrive/data.csv'
+csv_path = '/content/drive/MyDrive/Faces/data.csv'
 df = pd.read_csv(csv_path)
 
 #Funckja obliczajaca procent prawidlowo wytypowanych emocji w tej sesji
