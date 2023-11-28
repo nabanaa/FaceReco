@@ -39,29 +39,26 @@ def prawidlowosesja():
 
 #Funkcja obliczajaca procent prawidlowych odpowiedzi na podstawie google sheets
 def prawidlowosheets():
-    gc = gspread.authorize(creds)
-    worksheet = gc.open_by_key(arkusz).sheet1
-    rows = worksheet.get_all_values()
-    last = rows[len(rows)-1:]
-    if last[0][1] == "":
-      rows.pop()
-    Path = [row[0] for row in rows[1:]]
-    Gen = [row[1] for row in rows[1:]]
-    Rev = [row[2] for row in rows[1:]]
-    for p in range(len(Path)-1):
+  gc = gspread.authorize(creds)
+  worksheet = gc.open_by_key(arkusz).sheet1
+  rows = worksheet.get_all_values()
+  Path = [row[0] for row in rows[1:]]
+  GT = [row[1] for row in rows[1:]]
+  Rev = [row[2] for row in rows[1:]]
+  var = 0
+  total = 0
+  for p in range(len(Path)-1, 0, -1):
       sciezka = Path[p]
       split_parts = sciezka.split('/')
       klasa = split_parts[0]
-      if klasa != Gen[p]:
-        Path.pop(p)
-        Gen.pop(p)
-    var = 0
-    sum = 0
-    for il in range(len(Path)-1):
-      if Gen[il] == Rev[il]:
-        var= 1 + var
-      sum = 1 + sum
-    return var/sum * 100
+      if klasa != GT[p]:
+          Path.pop(p)
+          GT.pop(p)
+  for il in range(len(Path)-1, 0, -1):
+      if GT[il] == Rev[il]:
+          var = 1 + var
+      total = 1 + total
+  return (var/total * 100)
 
 #Funkcja majaca za zadanie usunac ostatnia komurke w google sheets
 #jesli nie jest prawidlowo wypelniona
