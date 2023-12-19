@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import os
+# import os
 import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ def create_video_writer(video_cap, output_filename):
 
     # grab the width, height, and fps of the frames in the video stream.
     frame_width = int(video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fcrame_height = int(video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(video_cap.get(cv2.CAP_PROP_FPS))
 
     # initialize the FourCC and a video writer object
@@ -51,8 +51,10 @@ while True:
     cv2.rectangle(frame, (x-offset, y-offset), (x+w+offset, y+h+offset), (255, 0, 0), 1)
     
     f_im = frame[y-offset:y+h+offset, x-offset:x+w+offset, :]
-    
-    cv2.putText(frame, "Press (h)Happy, o(Ahegao), (a)Angry, (s)Surprise, (n)Neutral, (d)Sad, (q)uit", (12,12), cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 0, 255), 1)
+    back_color = (255,255,255)
+    font_color = (0,0,0)
+    cv2.rectangle(frame, (0, 0), (640, 20), back_color, -1)
+    cv2.putText(frame, "Press (h)Happy, o(Ahegao), (a)Angry, (s)Surprise, (n)Neutral, (d)Sad, (q)uit", (12,15), cv2.QT_FONT_NORMAL, 0.5,font_color , 1)
     cv2.imshow("Frame", frame)
 
     key = cv2.waitKey(1) & 0xFF
@@ -86,9 +88,6 @@ while True:
     elif key == ord('q'):
         break
 
-    
-# cv2.imwrite(pic_dir+str(t.time())+'.png', images[0])
-# images = np.array(images)
+
 video_cap.release()
-# writer.release()
 cv2.destroyAllWindows()
