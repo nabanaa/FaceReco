@@ -106,7 +106,8 @@ layout = [
     ]          
     ]
 
-window = sg.Window('make-a-face!', layout, size=(800,600), element_justification='center')
+window_size_x, window_size_y = 800, 600;
+window = sg.Window('make-a-face!', layout, size=(window_size_x,window_size_y), element_justification='center')
 
 
 # EVENTS
@@ -166,6 +167,11 @@ while True:
         # Display the output
         # print(faces[0])
         (x, y, w, h) = faces[0]
+        left = x if x >= 0 else 0
+        right = x+w if x+w <= window_size_x else window_size_x
+        top = y+h  if y+h <= window_size_y else window_size_y
+        bottom = y if y >= 0 else 0
+        
         f_im = frame[x:x+w, y:y+h, :]
         # print(f_im.shape)
         H,W = interpreter.get_input_details()[0]['shape'][1:3]

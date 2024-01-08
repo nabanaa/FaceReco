@@ -14,7 +14,7 @@ creds, _ = default()
 import sys
 
 
-imienazwisko="ap"
+imienazwisko="adam pospieszny"
 
 # Nazwa naszego arkusza do którego beda kierowac sie wszystkie zebrane wyniki
 arkusz = '11sl6PCw_9n_WPeu1wKH5nSjmRbmelGyiHj8IYShOZdM'
