@@ -26,7 +26,7 @@ def create_video_writer(video_cap, output_filename):
 video_cap = cv2.VideoCapture(0)
 
 # creating folders for faces
-# they are created in the folder that the program was run
+# they are created in the project folder
 pic_dir = os.path.join(os.getcwd(), 'Faces')
 if not os.path.exists(pic_dir):
     os.makedirs(pic_dir)
@@ -76,14 +76,15 @@ while True:
     # Detect faces
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
     # Draw rectangle around the faces
-    # offset needed to get the full face
     anyFaces = np.any(faces)
     if anyFaces:
+        # offset needed to get the full face
         offset = 35
         face = faces[0]
         (x, y, w, h) = face
         xw = frame.shape[1]
         yw = frame.shape[0]
+        # making sure that we don't get out of bounds of frame
         P1 = (x-offset if x-offset >= 0 else 0, y-offset if y-offset >= 0 else 0)
         P2 = (x+w+offset if x+w+offset <= xw else xw, y+h+offset if y+h+offset <= yw else yw)
         cv2.rectangle(frame, P1, P2, (255, 0, 0), 1)

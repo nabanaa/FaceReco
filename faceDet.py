@@ -19,8 +19,10 @@ GREEN = (0, 255, 0)
 video_cap = cv2.VideoCapture(0)
 # initialize the video writer object
 writer = create_video_writer(video_cap, "output.mp4")
-
-with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
+# models is where your model resides
+# program has to be run through terminal in the main project folder
+model_path = os.path.join(os.getcwd(), 'models', 'lite_emotions_model_efficientnet_b0.tflite')
+with open(model_path, "rb") as f:
     lite_model_content = f.read()
 
 interpreter = tf.lite.Interpreter(model_content=lite_model_content)
@@ -79,4 +81,3 @@ while True:
 video_cap.release()
 writer.release()
 cv2.destroyAllWindows()
-
