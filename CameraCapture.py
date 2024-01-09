@@ -6,7 +6,6 @@ import os
 import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
-import time as t
 from PIL import Image
 
 def create_video_writer(video_cap, output_filename):
