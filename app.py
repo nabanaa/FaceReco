@@ -71,6 +71,9 @@ video_playing = False
 start_time = 0
 timer_active = False
 
+pause_counter_time = 0
+pause_counter_timer_active = False
+
 # PAUSE BUTTON
 pause_active = False
 
@@ -81,6 +84,9 @@ start_active = False
 show_new_game = False
 new_game_button_added = False
 
+# PLAYER_NAME INPUT
+show_player_name_input = True
+
 # MAKE-A-FACE MECHANICS
 prev_rolled_class = None
 face_prompt_str = 'Face prompt: '
@@ -89,10 +95,15 @@ new_face_prompt = False
 current_rolled_class = ''
 score_str = 'Score: '
 
+#"name": highscore
+player_data_dict = {}
+current_player = None
+
 score = 0
 
 # GUI 
 sg.theme('black')
+# sg.set_options(button_element_size=(6,3))
 layout = [
     [sg.Text('', key='-FACE_PROMPT-')],             # face to be made
     [sg.VPush()],                                   # blank space
@@ -101,13 +112,15 @@ layout = [
     [sg.Text(score_str + str(score), key='-SCORE-')],    # score primitive
     [sg.Text('Time', key='-TIME-')],                # time row
     [
-        sg.Button('Play', key='-START-'),
-        sg.Button('Pause', key='-PAUSE-'),
-        sg.Button('New Game', key='-NEW_GAME-',visible=False),
+        sg.Button('Play', key='-START-',size=(7,3)),
+        sg.Button('Pause', key='-PAUSE-',size=(7,3),visible=False),
+        # new_game = restart + change player
+        sg.Button('New Game', key='-NEW_GAME-',visible=False,size=(7,3)),
+        sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2))
     ]          
     ]
 
-window_size_x, window_size_y = 800, 600;
+window_size_x, window_size_y = 800, 650;
 window = sg.Window('make-a-face!', layout, size=(window_size_x,window_size_y), element_justification='center')
 
 
@@ -124,8 +137,18 @@ while True:
         video_playing = True
         start_showing_face_prompts = True
         new_face_prompt = True
-        window['-START-'].Update('Restart')
-
+        score = 0 # doesnt work
+        window['-SCORE-'].Update(score_str + str(score))
+        window['-PLAYER_NAME-'].Update(visible=False)
+        if window['-START-'].get_text() == "Play":
+            window['-PAUSE-'].Update(visible=True)
+            window['-START-'].Update('Restart')
+            
+            ### select current player, initialize player data array
+            if player_data_dict.get(values['-PLAYER_NAME-']) == None:
+                player_data_dict.update({values['-PLAYER_NAME-']:[]})
+            current_player = values['-PLAYER_NAME-']
+        
     elif event == '-PAUSE-':
         if pause_active == False:
             # pause
@@ -133,23 +156,53 @@ while True:
             timer_active = False
             video_playing = False
             pause_active = True
+            pause_counter_time = time()            
         else:
             # unpause
             window['-PAUSE-'].Update('Pause')
             timer_active = True
             video_playing = True
             pause_active = False
+            
+            # pause timer - counting during pause prevention
+            pause_counter_time = time() - pause_counter_time 
+            ### the problem is that it gets overwritten in the if
+            elapsed_time = elapsed_time - pause_counter_time
+            pause_counter_time = 0
     elif event == '-NEW_GAME-':
-        score = 0
+        start_time = time()
         timer_active = True
+        show_new_game = True
+        video_playing = True
+        start_showing_face_prompts = True
         new_face_prompt = True
-    
+        window['-START-'].Update('Restart')
+        score = 0 # doesnt work
+        window['-SCORE-'].Update(score_str + str(score))
+        
+        ### the new game button triggers pause if it was not triggered before
+        ### and it also shows the player name input again, so the player can be changed 
+        if pause_active == False:
+            # pause
+            window['-PAUSE-'].Update('Unpause')
+            timer_active = False
+            video_playing = False
+            pause_active = True
+            
+        # show player name input
+        window['-PLAYER_NAME-'].Update(visible = True)
+        start_time = time()
+        window['-START-'].Update('Play')
+        window['-PAUSE-'].Update(visible=False)
+        window['-NEW_GAME-'].Update(visible=False)
+        
+        
         
     if timer_active == True:
+        ### WIP
         elapsed_time = round(time() - start_time, 1)
         window['-TIME-'].update(elapsed_time)
-        
-        
+         
         
     if show_new_game == True and new_game_button_added == False:
         new_game_button_added = True
@@ -158,6 +211,8 @@ while True:
     if video_playing == True:
         ret, frame = video_cap.read()
         
+        
+        ### copied from faceDet 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Detect faces
         
@@ -183,12 +238,13 @@ while True:
         cv2.putText(frame, f"Prediction: {class_names[pred.argmax()]}: Certainty: {pred.max()*100}\%", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
         # show the frame to our screen
         writer.write(frame)
+        ### end of face det copy
         
         imgbytes = cv2.imencode('.png', frame)[1].tobytes()
         window['-IMAGE-'].update(data=imgbytes)
         
         ### game mechanics
-        print(current_rolled_class + "" + class_names[pred.argmax()])
+        # print(current_rolled_class + "" + class_names[pred.argmax()])
         if current_rolled_class == class_names[pred.argmax()]:
             score += 1
             window['-SCORE-'].update(score_str + str(score))
