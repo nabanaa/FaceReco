@@ -15,7 +15,7 @@ import random
 # make faces to score points
 #
 
-# do zrobienia: ramka kraszuje program, ustawianie thresholdu od jakiego zalicza punkt
+
 
 # HELPER COPY
 def create_video_writer(video_cap, output_filename):
@@ -71,6 +71,7 @@ video_playing = False
 start_time = 0
 timer_active = False
 
+paused_correction_time = 0
 pause_counter_time = 0
 pause_counter_timer_active = False
 
@@ -156,7 +157,7 @@ while True:
             timer_active = False
             video_playing = False
             pause_active = True
-            pause_counter_time = time()            
+            pause_counter_time = time()          
         else:
             # unpause
             window['-PAUSE-'].Update('Pause')
@@ -166,8 +167,8 @@ while True:
             
             # pause timer - counting during pause prevention
             pause_counter_time = time() - pause_counter_time 
+            paused_correction_time = pause_counter_time
             ### the problem is that it gets overwritten in the if
-            elapsed_time = elapsed_time - pause_counter_time
             pause_counter_time = 0
     elif event == '-NEW_GAME-':
         start_time = time()
@@ -200,7 +201,8 @@ while True:
         
     if timer_active == True:
         ### WIP
-        elapsed_time = round(time() - start_time, 1)
+        elapsed_time = round(time() - start_time - paused_correction_time, 1)
+        paused_correction_time = 0
         window['-TIME-'].update(elapsed_time)
          
         
