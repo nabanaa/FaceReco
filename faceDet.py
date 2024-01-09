@@ -21,7 +21,7 @@ video_cap = cv2.VideoCapture(0)
 writer = create_video_writer(video_cap, "output.mp4")
 # models is where your model resides
 # program has to be run through terminal in the main project folder
-model_path = os.path.join(os.getcwd(),  'lite_emotions_model_efficientnet_b0.tflite')
+model_path = os.path.join(os.getcwd(), 'models', 'lite_emotions_model_efficientnet_b0.tflite')
 with open(model_path, "rb") as f:
     lite_model_content = f.read()
 
