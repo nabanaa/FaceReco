@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import cv2
 from helper import create_video_writer
 import os
@@ -18,20 +20,8 @@ video_cap = cv2.VideoCapture(0)
 # initialize the video writer object
 writer = create_video_writer(video_cap, "output.mp4")
 
-# load the pre-trained YOLOv8n model
-# model = YOLO("yolov8n.pt")
-# model = TensorflowLiteClassificationModel("/tmp/lite_emotions_model_efficientnet_b0.tflite")
-# model = tfkeras.models.load_model('model.h5')
-# model = keras.models.load_model("model.keras")
-# model = tf.keras.saving.load_model("model.keras")
-# model = tf.saved_model.load("/content/modelmodel.keras")
-
-# interpreter = tf.lite.Interpreter("/tmp/lite_emotions_model_efficientnet_b0.tflite")
-
 with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
     lite_model_content = f.read()
-# print("Wrote %sTFLite model of %d bytes." %
-      # ("optimized " if optimize_lite_model else "", len(lite_model_content)))
 
 interpreter = tf.lite.Interpreter(model_content=lite_model_content)
 # This little helper wraps the TFLite Interpreter as a numpy-to-numpy function.
@@ -40,6 +30,9 @@ def lite_model(images):
     interpreter.set_tensor(interpreter.get_input_details()[0]['index'], images)
     interpreter.invoke()
     return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
+
+def classify_face(face_img):
+        return softmax(lite_model(face_img[None, ...].astype(np.float32)/255)[0])
 
 # class names
 class_names=["Ahegao", "Angry", "Happy", "Neutral", "Sad", "Surprised"]
@@ -50,38 +43,33 @@ while True:
     # if there are no more frames to process, break out of the loop
     if not ret:
         break
-        
-    #preprocessing frame
-    #cropping
-    #resize do rozmiaru modelu z lite
-    #classify
 
     # Load the cascade
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     # Convert into grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Detect faces
-    
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-    # Draw rectangle around the faces
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-    # Display the output
-    # print(faces[0])
-    if not np.any(faces):
-        continue
-    (x, y, w, h) = faces[0]
-    f_im = frame[x:x+w, y:y+h, :]
-    # print(f_im.shape)
-    H,W = interpreter.get_input_details()[0]['shape'][1:3]
-    resized_face = cv2.resize(f_im, (W, H))
-    def classify_face(face_img):
-        return softmax(lite_model(face_img[None, ...].astype(np.float32)/255)[0])
+
+    anyFaces = np.any(faces)
+    if anyFaces:
+        # Draw rectangle around the faces
+        offset = 35
+        face = faces[0]
+        (x, y, w, h) = face
+        xw = frame.shape[1]
+        yw = frame.shape[0]
+        P1 = (x-offset if x-offset >= 0 else 0, y-offset if y-offset >= 0 else 0)
+        P2 = (x+w+offset if x+w+offset <= xw else xw, y+h+offset if y+h+offset <= yw else yw)
+        cv2.rectangle(frame, P1, P2, (255, 0, 0), 1)
+        f_im = frame[P1[0]:P2[0], P1[1]:P2[1], :]
+        H,W = interpreter.get_input_details()[0]['shape'][1:3]
+        resized_face = cv2.resize(f_im, (W, H))
     
-    pred = classify_face(resized_face)
-    pred.argmax()
-    # print(f"Time to process 1 frame: {total * 1000:.0f} milliseconds")
-    cv2.putText(frame, f"Prediction: {class_names[pred.argmax()]}: Certainty: {pred.max()*100}\%", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+        pred = classify_face(resized_face)
+        pred.argmax()
+        # print(f"Time to process 1 frame: {total * 1000:.0f} milliseconds")
+        cv2.putText(frame, f"Prediction: {class_names[pred.argmax()]} Certainty: {round(pred.max()*100,2)}%", (15,40), cv2.QT_FONT_NORMAL, 1, (0, 0, 255), 2)
     # show the frame to our screen
     cv2.imshow("Frame", frame)
     writer.write(frame)
