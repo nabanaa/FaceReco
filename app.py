@@ -82,6 +82,7 @@ show_new_game = False
 new_game_button_added = False
 
 # MAKE-A-FACE MECHANICS
+prev_rolled_class = None
 face_prompt_str = 'Face prompt: '
 start_showing_face_prompts = False
 new_face_prompt = False
@@ -166,12 +167,9 @@ while True:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
         # Display the output
         # print(faces[0])
+        if not np.any(faces):
+            continue
         (x, y, w, h) = faces[0]
-        left = x if x >= 0 else 0
-        right = x+w if x+w <= window_size_x else window_size_x
-        top = y+h  if y+h <= window_size_y else window_size_y
-        bottom = y if y >= 0 else 0
-        
         f_im = frame[x:x+w, y:y+h, :]
         # print(f_im.shape)
         H,W = interpreter.get_input_details()[0]['shape'][1:3]
@@ -199,7 +197,11 @@ while True:
     if start_showing_face_prompts == True:
         if new_face_prompt == True:
             new_face_prompt = False
-            current_rolled_class = class_names[random.randint(0,5)]
+            rolled_class_idx = random.randint(0,5)
+            while rolled_class_idx == prev_rolled_class:
+                rolled_class_idx = random.randint(0,5)
+            current_rolled_class = class_names[rolled_class_idx]
+            prev_rolled_class = rolled_class_idx
             window['-FACE_PROMPT-'].update(face_prompt_str + current_rolled_class)
             
 
