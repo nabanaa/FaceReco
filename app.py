@@ -15,114 +15,134 @@ import random
 # make faces to score points
 #
 
+class MakeAFace():
+   # class attributes
+    
+    # define some constants
+    CONFIDENCE_THRESHOLD = 0.7
+    GREEN = (0, 255, 0)
+    # initialize the video capture object
+    video_cap = cv2.VideoCapture(0)
+    # initialize the video writer object
+    writer = __class__.create_video_writer(video_cap, "output.mp4")
+
+    with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
+        lite_model_content = f.read()
+
+    interpreter = tf.lite.Interpreter(model_content=lite_model_content)
 
 
-# HELPER COPY
-def create_video_writer(video_cap, output_filename):
 
-    # grab the width, height, and fps of the frames in the video stream.
-    frame_width = int(video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = int(video_cap.get(cv2.CAP_PROP_FPS))
+    # class names
+    class_names=["Ahegao", "Angry", "Happy", "Neutral", "Sad", "Surprised"]
 
-    # initialize the FourCC and a video writer object
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    writer = cv2.VideoWriter(output_filename, fourcc, fps,
-                             (frame_width, frame_height))
+    # Load the cascade
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    
+    # instance attributes
+    def __init__():
+        # VIDEO 
+        self.video_playing = False
 
-    return writer
+        # TIMER
+        self.start_time = 0
+        self.timer_active = False
 
-# FACE DET COPIES
-def softmax(x):
-    exps = np.exp(x - np.max(x))  # Subtract max for numerical stability
-    return exps / np.sum(exps)
+        self.paused_correction_time = 0
+        self.pause_counter_time = 0
+        self.pause_counter_timer_active = False
 
-# define some constants
-CONFIDENCE_THRESHOLD = 0.7
-GREEN = (0, 255, 0)
+        # PAUSE BUTTON
+        self.pause_active = False
 
-# initialize the video capture object
-video_cap = cv2.VideoCapture(0)
-# initialize the video writer object
-writer = create_video_writer(video_cap, "output.mp4")
+        # PLAY BUTTON
+        self.start_active = False
 
-with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
-    lite_model_content = f.read()
+        # NEW_GAME BUTTON
+        self.show_new_game = False
+        self.new_game_button_added = False
 
-interpreter = tf.lite.Interpreter(model_content=lite_model_content)
-# This little helper wraps the TFLite Interpreter as a numpy-to-numpy function.
-def lite_model(images):
-    interpreter.allocate_tensors()
-    interpreter.set_tensor(interpreter.get_input_details()[0]['index'], images)
-    interpreter.invoke()
-    return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
+        # PLAYER_NAME INPUT
+        self.show_player_name_input = True
 
-# class names
-class_names=["Ahegao", "Angry", "Happy", "Neutral", "Sad", "Surprised"]
+        # MAKE-A-FACE MECHANICS
+        self.prev_rolled_class = None
+        self.face_prompt_str = 'Face prompt: '
+        self.start_showing_face_prompts = False
+        self.new_face_prompt = False
+        self.current_rolled_class = ''
+        self.score_str = 'Score: '
 
-# Load the cascade
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        #"name": highscore
+        self.player_data_dict = {}
+        self.current_player = None
+        self.score = 0
+        
 
-# VIDEO 
-video_playing = False
+        window_size_x, window_size_y = 800, 650;
+        window = sg.Window('make-a-face!', layout, size=(window_size_x,window_size_y), element_justification='center')
+        
+        # GUI 
+        sg.theme('black')
+        # sg.set_options(button_element_size=(6,3))
+        layout = [
+            [sg.Text('', key='-FACE_PROMPT-')],             # face to be made
+            [sg.VPush()],                                   # blank space
+            [sg.Image(key='-IMAGE-')],                      # game window with camera
+            [sg.VPush()],                                   # blank space
+            [sg.Text(score_str + str(score), key='-SCORE-')],    # score primitive
+            [sg.Text('Time', key='-TIME-')],                # time row
+            [
+                sg.Button('Play', key='-START-',size=(7,3)),
+                sg.Button('Pause', key='-PAUSE-',size=(7,3),visible=False),
+                # new_game = restart + change player
+                sg.Button('New Game', key='-NEW_GAME-',visible=False,size=(7,3)),
+                sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2))
+            ]          
+            ]
+    
+    # class methods
+
+    # HELPER COPY
+    def create_video_writer(video_cap, output_filename):
+    
+        # grab the width, height, and fps of the frames in the video stream.
+        frame_width = int(video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frame_height = int(video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fps = int(video_cap.get(cv2.CAP_PROP_FPS))
+    
+        # initialize the FourCC and a video writer object
+        fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+        writer = cv2.VideoWriter(output_filename, fourcc, fps,
+                                 (frame_width, frame_height))
+    
+        return writer
+    
+    
+    # FACE DET COPIES
+    def softmax(x):
+        exps = np.exp(x - np.max(x))  # Subtract max for numerical stability
+        return exps / np.sum(exps)
+    
+    
+    # This little helper wraps the TFLite Interpreter as a numpy-to-numpy function.
+    def lite_model(images):
+        __class__.interpreter.allocate_tensors()
+        __class__.interpreter.set_tensor(__class__.interpreter.get_input_details()[0]['index'], images)
+        __class__.interpreter.invoke()
+        return __class__.interpreter.get_tensor(__class__.interpreter.get_output_details()[0]['index'])
+    
+    # instance methods
 
 
-# TIMER
-start_time = 0
-timer_active = False
 
-paused_correction_time = 0
-pause_counter_time = 0
-pause_counter_timer_active = False
 
-# PAUSE BUTTON
-pause_active = False
+# STATES
+STATE_START_SC = 0
+STATE_PLAY_SC = 1
+STATE_PAUSE_SC = 2
 
-# PLAY BUTTON
-start_active = False
 
-# NEW_GAME BUTTON
-show_new_game = False
-new_game_button_added = False
-
-# PLAYER_NAME INPUT
-show_player_name_input = True
-
-# MAKE-A-FACE MECHANICS
-prev_rolled_class = None
-face_prompt_str = 'Face prompt: '
-start_showing_face_prompts = False
-new_face_prompt = False
-current_rolled_class = ''
-score_str = 'Score: '
-
-#"name": highscore
-player_data_dict = {}
-current_player = None
-
-score = 0
-
-# GUI 
-sg.theme('black')
-# sg.set_options(button_element_size=(6,3))
-layout = [
-    [sg.Text('', key='-FACE_PROMPT-')],             # face to be made
-    [sg.VPush()],                                   # blank space
-    [sg.Image(key='-IMAGE-')],                      # game window with camera
-    [sg.VPush()],                                   # blank space
-    [sg.Text(score_str + str(score), key='-SCORE-')],    # score primitive
-    [sg.Text('Time', key='-TIME-')],                # time row
-    [
-        sg.Button('Play', key='-START-',size=(7,3)),
-        sg.Button('Pause', key='-PAUSE-',size=(7,3),visible=False),
-        # new_game = restart + change player
-        sg.Button('New Game', key='-NEW_GAME-',visible=False,size=(7,3)),
-        sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2))
-    ]          
-    ]
-
-window_size_x, window_size_y = 800, 650;
-window = sg.Window('make-a-face!', layout, size=(window_size_x,window_size_y), element_justification='center')
 
 
 # EVENTS
@@ -229,7 +249,7 @@ while True:
         (x, y, w, h) = faces[0]
         f_im = frame[x:x+w, y:y+h, :]
         # print(f_im.shape)
-        H,W = interpreter.get_input_details()[0]['shape'][1:3]
+        H,W = __class__.interpreter.get_input_details()[0]['shape'][1:3]
         resized_face = cv2.resize(f_im, (W, H))
         def classify_face(face_img):
             return softmax(lite_model(face_img[None, ...].astype(np.float32)/255)[0])
