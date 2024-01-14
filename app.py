@@ -40,12 +40,14 @@ class MakeAFace():
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         # VIDEO 
         self.video_playing = False
+        self.CAM_HEIGHT = 640
+        self.CAM_WIDTH = 480
 
         # TIMER
         self.start_time = 0
         self.timer_active = False
 
-        self.paused_correction_time = 0
+        self.total_paused_correction_time = 0
         self.pause_counter_time = 0
         self.pause_counter_timer_active = False
 
@@ -58,6 +60,7 @@ class MakeAFace():
         # NEW_GAME BUTTON
         self.show_new_game = False
         self.new_game_button_added = False
+        self.show_black_screen = True
 
         # PLAYER_NAME INPUT
         self.show_player_name_input = True
@@ -80,6 +83,7 @@ class MakeAFace():
         self.STATE_START_SC = 0
         self.STATE_PLAY_SC = 1
         self.STATE_PAUSE_SC = 2        
+        
 
         # GUI 
         sg.theme('black')
@@ -135,86 +139,105 @@ class MakeAFace():
         interpreter.invoke()
         return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
     
+    
     # instance methods
+    
+    def handle_start(self, values):
+        self.show_black_screen = False
+        self.start_time = time()
+        self.timer_active = True
+        self.show_new_game = True
+        self.video_playing = True
+        self.start_showing_face_prompts = True
+        self.new_face_prompt = True
+        self.score = 0 # doesnt work
+        self.window['-SCORE-'].Update(self.score_str + str(self.score))
+        self.window['-PLAYER_NAME-'].Update(visible=False)
+        if self.window['-START-'].get_text() == "Play":
+            self.window['-PAUSE-'].Update(visible=True)
+            self.window['-START-'].Update('Restart')
+            self.window['-NEW_GAME-'].Update(visible=True)
+            
+            ### select current player, initialize player data array
+            if self.player_data_dict.get(values['-PLAYER_NAME-']) == None:
+                self.player_data_dict.update({values['-PLAYER_NAME-']:[]})
+            self.current_player = values['-PLAYER_NAME-']
+            
+    def handle_pause(self):
+        if self.pause_active == False:
+            # pause
+            self.window['-PAUSE-'].Update('Unpause')
+            self.timer_active = False
+            self.video_playing = False
+            self.pause_active = True
+            self.pause_counter_time = time()          
+        else:
+            # unpause
+            self.window['-PAUSE-'].Update('Pause')
+            self.timer_active = True
+            self.video_playing = True
+            self.pause_active = False
+            
+            # pause timer - counting during pause prevention
+            correction_time = time() - self.pause_counter_time 
+            # we add the correction over time
+            self.total_paused_correction_time += correction_time
+            self.pause_counter_time = 0
+            
+    def handle_new_game(self):
+        self.start_showing_face_prompts = False
+        self.show_black_screen = True
+        self.start_time = time()
+        self.timer_active = True
+        self.show_new_game = True
+        self.video_playing = True
+        self.window['-START-'].Update('Restart')
+        self.score = 0 # doesnt work
+        self.window['-SCORE-'].Update(self.score_str + str(self.score))
+        
+        # make the screen black
+        
+        
+        ### the new game button triggers pause if it was not triggered before
+        ### and it also shows the player name input again, so the player can be changed 
+        if self.pause_active == False:
+            # pause
+            self.window['-PAUSE-'].Update('Pause')
+            self.timer_active = False
+            self.window['-TIME-'].Update('Time')
+            self.video_playing = False
+            self.pause_active = False
+            
+        # show player name input
+        self.window['-PLAYER_NAME-'].Update(visible = True)
+        self.start_time = time()
+        self.window['-START-'].Update('Play')
+        self.window['-PAUSE-'].Update(visible=False)
+        self.window['-NEW_GAME-'].Update(visible=False)
+    
     def run_main_loop(self):      
         # EVENTS
         while True:
+    
             event, values = self.window.read(timeout=10)
-            
+                
             if event == sg.WIN_CLOSED:
                 break
             elif event == '-START-':
-                self.start_time = time()
-                self.timer_active = True
-                self.show_new_game = True
-                self.video_playing = True
-                self.start_showing_face_prompts = True
-                self.new_face_prompt = True
-                self.score = 0 # doesnt work
-                self.window['-SCORE-'].Update(self.score_str + str(self.score))
-                self.window['-PLAYER_NAME-'].Update(visible=False)
-                if self.window['-START-'].get_text() == "Play":
-                    self.window['-PAUSE-'].Update(visible=True)
-                    self.window['-START-'].Update('Restart')
-                    
-                    ### select current player, initialize player data array
-                    if self.player_data_dict.get(values['-PLAYER_NAME-']) == None:
-                        self.player_data_dict.update({values['-PLAYER_NAME-']:[]})
-                    self.current_player = values['-PLAYER_NAME-']
-                
+                self.handle_start(values)    
             elif event == '-PAUSE-':
-                if self.pause_active == False:
-                    # pause
-                    self.window['-PAUSE-'].Update('Unpause')
-                    self.timer_active = False
-                    self.video_playing = False
-                    self.pause_active = True
-                    self.pause_counter_time = time()          
-                else:
-                    # unpause
-                    self.window['-PAUSE-'].Update('Pause')
-                    self.timer_active = True
-                    self.video_playing = True
-                    self.pause_active = False
-                    
-                    # pause timer - counting during pause prevention
-                    self.pause_counter_time = time() - self.pause_counter_time 
-                    self.paused_correction_time = self.pause_counter_time
-                    ### the problem is that it gets overwritten in the if
-                    self.pause_counter_time = 0
+                self.handle_pause()
             elif event == '-NEW_GAME-':
-                self.start_time = time()
-                self.timer_active = True
-                self.show_new_game = True
-                self.video_playing = True
-                self.start_showing_face_prompts = True
-                self.new_face_prompt = True
-                self.window['-START-'].Update('Restart')
-                self.score = 0 # doesnt work
-                self.window['-SCORE-'].Update(self.score_str + str(self.score))
+                self.handle_new_game()
                 
-                ### the new game button triggers pause if it was not triggered before
-                ### and it also shows the player name input again, so the player can be changed 
-                if self.pause_active == False:
-                    # pause
-                    self.window['-PAUSE-'].Update('Unpause')
-                    self.timer_active = False
-                    self.video_playing = False
-                    self.pause_active = True
-                    
-                # show player name input
-                self.window['-PLAYER_NAME-'].Update(visible = True)
-                self.start_time = time()
-                self.window['-START-'].Update('Play')
-                self.window['-PAUSE-'].Update(visible=False)
-                self.window['-NEW_GAME-'].Update(visible=False)
                 
+            #### options
                 
                 
             if self.timer_active == True:
                 ### WIP
-                elapsed_time = round(time() - self.start_time - self.paused_correction_time, 1)
-                self.paused_correction_time = 0
+                # print(str(self.total_paused_correction_time) + "    " + str(time() - self.start_time))
+                elapsed_time = round(time() - self.start_time - self.total_paused_correction_time, 1)
                 self.window['-TIME-'].update(elapsed_time)
                 
                 
@@ -222,7 +245,7 @@ class MakeAFace():
                 self.new_game_button_added = True
                 self.window['-NEW_GAME-'].update(visible=True)
                 
-            if self.video_playing == True:
+            if True:
                 ret, frame = self.video_cap.read()
                 
                 
@@ -233,15 +256,27 @@ class MakeAFace():
                 faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
                 # Draw rectangle around the faces
                 for (x, y, w, h) in faces:
-                    cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                    ### make sure there are no out of bounds errors
+                    x if x >= 0 else 0
+                    y if y >= 0 else 0
+                    xw = x+w if x+w <= self.CAM_WIDTH else self.CAM_WIDTH
+                    yh = y+h if y+h <= self.CAM_HEIGHT else self.CAM_HEIGHT
+                    
+                    cv2.rectangle(frame, (x, y), (xw, yh), (255, 0, 0), 2)
                 # Display the output
                 # print(faces[0])
                 if not np.any(faces):
                     continue
                 (x, y, w, h) = faces[0]
-                f_im = frame[x:x+w, y:y+h, :]
+                ### make sure there are no out of bounds errors
+                x if x >= 0 else 0
+                y if y >= 0 else 0
+                xw = x+w if x+w <= self.CAM_WIDTH else self.CAM_WIDTH
+                yh = y+h if y+h <= self.CAM_HEIGHT else self.CAM_HEIGHT
+                f_im = frame[x:xw, y:yh, :]
                 # print(f_im.shape)
                 H,W = self.interpreter.get_input_details()[0]['shape'][1:3]
+                # WIP culprit
                 resized_face = cv2.resize(f_im, (W, H))
                 def classify_face(face_img):
                     return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
@@ -254,8 +289,17 @@ class MakeAFace():
                 self.writer.write(frame)
                 ### end of face det copy
                 
-                imgbytes = cv2.imencode('.png', frame)[1].tobytes()
-                self.window['-IMAGE-'].update(data=imgbytes)
+                
+                                
+                if self.show_black_screen != True:
+                    imgbytes = cv2.imencode('.png', frame)[1].tobytes()
+                    self.window['-IMAGE-'].update(data=imgbytes)
+                else:
+                    # change the screen to all black
+                    shape = (480, 640, 3)
+                    zeros_array = np.zeros(shape, dtype=np.uint8)
+                    imgbytes = cv2.imencode('.png', zeros_array)[1].tobytes()
+                    self.window['-IMAGE-'].update(data=imgbytes)
                 
                 ### game mechanics
                 # print(current_rolled_class + "" + class_names[pred.argmax()])
@@ -273,7 +317,8 @@ class MakeAFace():
                     current_rolled_class = __class__.class_names[rolled_class_idx]
                     self.prev_rolled_class = rolled_class_idx
                     self.window['-FACE_PROMPT-'].update(self.face_prompt_str + current_rolled_class)
-                    
+            else:
+                self.window['-FACE_PROMPT-'].update("")
 
                     
 
