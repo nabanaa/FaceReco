@@ -72,12 +72,14 @@ class MakeAFace():
         self.new_face_prompt = False
         self.current_rolled_class = ''
         self.score_str = 'Score: '
+        self.round_duration = 20;
 
         #"name": highscore
         self.player_data_dict = {}
         self.current_player = None
         self.score = 0
 
+        self.end_screen = False
             
         # STATES
         self.STATE_START_SC = 0
@@ -89,23 +91,34 @@ class MakeAFace():
         sg.theme('black')
         # sg.set_options(button_element_size=(6,3))
         self.layout = [
-            [sg.Text('', key='-FACE_PROMPT-')],             # face to be made
+            [sg.Text('', key='-FACE_PROMPT-',font=('Helvetica', 20, 'bold'), text_color='red')],             # face to be made
             [sg.VPush()],                                   # blank space
             [sg.Image(key='-IMAGE-')],                      # game window with camera
             [sg.VPush()],                                   # blank space
-            [sg.Text(self.score_str + str(self.score), key='-SCORE-')],    # score primitive
+            [sg.Text(self.score_str + str(self.score), key='-SCORE-',  visible=False)],    # score primitive
             [sg.Text('Time', key='-TIME-')],                # time row
             [
                 sg.Button('Play', key='-START-',size=(7,3)),
                 sg.Button('Pause', key='-PAUSE-',size=(7,3),visible=False),
                 # new_game = restart + change player
                 sg.Button('New Game', key='-NEW_GAME-',visible=False,size=(7,3)),
-                sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2))
+                sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2)),
+                sg.ButtonMenu("Highscores", ["", "empty"], key='-HIGHSCORES-'),
+                sg.Checkbox("No Aheago", key='-NO_AHEAGO-',visible=True,background_color='white',text_color='black')
             ]          
             ]
         
-        self.window_size_x, self.window_size_y = 800, 650;
+        
+        self.window_size_x, self.window_size_y = 800, 650
         self.window = sg.Window('make-a-face!', self.layout, size=(self.window_size_x,self.window_size_y), element_justification='center')
+        # load highscores if its not empty, setup for values were loaded in
+        if self.player_data_dict:
+            dict_to_list = []
+            for key, value in self.player_data_dict.items():
+                dict_to_list.append(f"{key}: {value}")
+            dict_to_list = ["highscores",dict_to_list]
+            self.window['-HIGHSCORES-'].Update(menu_def=dict_to_list)
+        
         self.run_main_loop()
     
     # class methods
@@ -141,8 +154,13 @@ class MakeAFace():
     
     
     # instance methods
-    
     def handle_start(self, values):
+        self.pause_active = False
+        self.window['-PAUSE-'].Update('Pause')
+        self.window['-NO_AHEAGO-'].Update(visible=False)
+        self.window['-SCORE-'].Update(visible=True)
+        self.window['-HIGHSCORES-'].Update(visible=False)
+        self.end_screen = False
         self.show_black_screen = False
         self.start_time = time()
         self.timer_active = True
@@ -159,8 +177,10 @@ class MakeAFace():
             self.window['-NEW_GAME-'].Update(visible=True)
             
             ### select current player, initialize player data array
+            
             if self.player_data_dict.get(values['-PLAYER_NAME-']) == None:
-                self.player_data_dict.update({values['-PLAYER_NAME-']:[]})
+                self.player_data_dict.update({values['-PLAYER_NAME-']:0})
+                
             self.current_player = values['-PLAYER_NAME-']
             
     def handle_pause(self):
@@ -185,12 +205,19 @@ class MakeAFace():
             self.pause_counter_time = 0
             
     def handle_new_game(self):
+        self.window['-SCORE-'].Update(visible=False)
+        self.end_screen = False
+        ### timer setup
+        self.total_paused_correction_time = 0
+        self.pause_active = False
+        self.window['-PAUSE-'].Update('Pause')
+
+        ### setup rest
         self.start_showing_face_prompts = False
         self.show_black_screen = True
         self.start_time = time()
-        self.timer_active = True
+        self.timer_active = False
         self.show_new_game = True
-        self.video_playing = True
         self.window['-START-'].Update('Restart')
         self.score = 0 # doesnt work
         self.window['-SCORE-'].Update(self.score_str + str(self.score))
@@ -214,11 +241,21 @@ class MakeAFace():
         self.window['-START-'].Update('Play')
         self.window['-PAUSE-'].Update(visible=False)
         self.window['-NEW_GAME-'].Update(visible=False)
+        
+        # load highscores if its not empty
+        self.window['-HIGHSCORES-'].Update(visible=True)
+        if self.player_data_dict: 
+            dict_to_list = []
+            for key, value in self.player_data_dict.items():
+                dict_to_list.append(f"{key}: {value}")
+            
+            dict_to_list = ["highscores",dict_to_list]
+            self.window['-HIGHSCORES-'].Update(menu_definition=dict_to_list)
+        self.window['-NO_AHEAGO-'].Update(visible=True)
     
-    def run_main_loop(self):      
+    def run_main_loop(self):
         # EVENTS
         while True:
-    
             event, values = self.window.read(timeout=10)
                 
             if event == sg.WIN_CLOSED:
@@ -237,14 +274,29 @@ class MakeAFace():
             if self.timer_active == True:
                 ### WIP
                 # print(str(self.total_paused_correction_time) + "    " + str(time() - self.start_time))
-                elapsed_time = round(time() - self.start_time - self.total_paused_correction_time, 1)
+                elapsed_time = round(self.round_duration - (time() - self.start_time - self.total_paused_correction_time), 1)
                 self.window['-TIME-'].update(elapsed_time)
-                
+                if elapsed_time <= 0:
+                    ### show modified new game screen, clean up and save score
+                    
+                    # saving the highscore
+                    if self.player_data_dict[self.current_player] < self.score:
+                        self.player_data_dict[self.current_player] = self.score
+                    
+                    cache_player = self.current_player
+                    cache_score = self.score
+                    cache_duration = self.round_duration
+                    self.handle_new_game()
+                    self.window['-FACE_PROMPT-'].Update(f"{cache_player} scored: {cache_score} in {cache_duration} seconds!")
+                    self.end_screen = True
+                    
+                                    
                 
             if self.show_new_game == True and self.new_game_button_added == False:
                 self.new_game_button_added = True
                 self.window['-NEW_GAME-'].update(visible=True)
                 
+            # if self.video_playing:
             if True:
                 ret, frame = self.video_cap.read()
                 
@@ -284,16 +336,16 @@ class MakeAFace():
                 pred = classify_face(resized_face)
                 pred.argmax()
                 # print(f"Time to process 1 frame: {total * 1000:.0f} milliseconds")
-                cv2.putText(frame, f"Prediction: {__class__.class_names[pred.argmax()]}: Certainty: {pred.max()*100}\%", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+                cv2.putText(frame, f"Prediction: {__class__.class_names[pred.argmax()]}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+                cv2.putText(frame, f"Certainty: {round(pred.max()*100, 2)}%", (10,65), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
                 # show the frame to our screen
                 self.writer.write(frame)
                 ### end of face det copy
-                
-                
                                 
                 if self.show_black_screen != True:
-                    imgbytes = cv2.imencode('.png', frame)[1].tobytes()
-                    self.window['-IMAGE-'].update(data=imgbytes)
+                    if self.video_playing:
+                        imgbytes = cv2.imencode('.png', frame)[1].tobytes()
+                        self.window['-IMAGE-'].update(data=imgbytes)
                 else:
                     # change the screen to all black
                     shape = (480, 640, 3)
@@ -302,7 +354,6 @@ class MakeAFace():
                     self.window['-IMAGE-'].update(data=imgbytes)
                 
                 ### game mechanics
-                # print(current_rolled_class + "" + class_names[pred.argmax()])
                 if self.current_rolled_class == __class__.class_names[pred.argmax()]:
                     self.score += 1
                     self.window['-SCORE-'].update(self.score_str + str(self.score))
@@ -314,14 +365,13 @@ class MakeAFace():
                     rolled_class_idx = random.randint(0,5)
                     while rolled_class_idx == self.prev_rolled_class:
                         rolled_class_idx = random.randint(0,5)
-                    current_rolled_class = __class__.class_names[rolled_class_idx]
+                    self.current_rolled_class = __class__.class_names[rolled_class_idx]
                     self.prev_rolled_class = rolled_class_idx
-                    self.window['-FACE_PROMPT-'].update(self.face_prompt_str + current_rolled_class)
+                    self.window['-FACE_PROMPT-'].update(self.face_prompt_str + self.current_rolled_class)
             else:
-                self.window['-FACE_PROMPT-'].update("")
-
-                    
-
+                if self.end_screen == False:
+                    self.window['-FACE_PROMPT-'].update("")
+                
                 
         # close cv2
         self.video_cap.release()
