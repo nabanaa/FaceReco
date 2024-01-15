@@ -104,7 +104,7 @@ class MakeAFace():
                 sg.Button('New Game', key='-NEW_GAME-',visible=False,size=(7,3)),
                 sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2)),
                 sg.ButtonMenu("Highscores", ["", "empty"], key='-HIGHSCORES-'),
-                sg.Checkbox("No Aheago", key='-NO_AHEAGO-',visible=True,background_color='white',text_color='black')
+                sg.Checkbox("No-Aheago", key='-NO_AHEAGO-',visible=True,background_color='white',text_color='black')
             ]          
             ]
         
@@ -362,9 +362,14 @@ class MakeAFace():
             if self.start_showing_face_prompts == True:
                 if self.new_face_prompt == True:
                     self.new_face_prompt = False
-                    rolled_class_idx = random.randint(0,5)
-                    while rolled_class_idx == self.prev_rolled_class:
+                    if self.window['-NO_AHEAGO-'].get():
+                        rolled_class_idx = random.randint(1,5)
+                        while rolled_class_idx == self.prev_rolled_class:
+                            rolled_class_idx = random.randint(1,5)
+                    else:        
                         rolled_class_idx = random.randint(0,5)
+                        while rolled_class_idx == self.prev_rolled_class:
+                            rolled_class_idx = random.randint(0,5)
                     self.current_rolled_class = __class__.class_names[rolled_class_idx]
                     self.prev_rolled_class = rolled_class_idx
                     self.window['-FACE_PROMPT-'].update(self.face_prompt_str + self.current_rolled_class)
