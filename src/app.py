@@ -32,7 +32,7 @@ class MakeAFace():
         # initialize the video writer object
         self.writer = __class__.create_video_writer(self.video_cap, "output.mp4")
 
-        with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
+        with open("../models/lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
             self.lite_model_content = f.read()
             
         self.interpreter = tf.lite.Interpreter(model_content=self.lite_model_content)
