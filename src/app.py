@@ -31,7 +31,8 @@ class MakeAFace():
         self.video_cap = cv2.VideoCapture(0)
         # initialize the video writer object
 
-        with open("models/lite_emotions_model_efficientnet_b0_prev.tflite", "rb") as f:
+        file_path = os.path.join("models", "lite_emotions_model_efficientnet_b0_prev.tflite")
+        with open(file_path, "rb") as f:
             self.lite_model_content = f.read()
             
         self.interpreter = tf.lite.Interpreter(model_content=self.lite_model_content)
@@ -362,7 +363,7 @@ class MakeAFace():
                 
         # close cv2
         self.video_cap.release()
-        self.writer.release()
+        # self.writer.release()
         cv2.destroyAllWindows()
 
         # close pysimplegui
