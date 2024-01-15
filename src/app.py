@@ -31,7 +31,7 @@ class MakeAFace():
         self.video_cap = cv2.VideoCapture(0)
         # initialize the video writer object
     
-        file_path = os.path.join(os.path.dirname(os.path.abspath("app.py")), "models", "lite_emotions_model_efficientnet_b0_prev.tflite")
+        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "lite_emotions_model_efficientnet_b0_prev.tflite")
         with open(file_path, "rb") as f:
             self.lite_model_content = f.read()
             
