@@ -30,7 +30,10 @@ class MakeAFace():
         # initialize the video capture object
         self.video_cap = cv2.VideoCapture(0)
         # initialize the video writer object
+<<<<<<< HEAD
         self.writer = __class__.create_video_writer(self.video_cap, "output.mp4")
+=======
+>>>>>>> EventHandlingReformatFunctions
 
         with open("lite_emotions_model_efficientnet_b0.tflite", "rb") as f:
             self.lite_model_content = f.read()
@@ -122,6 +125,7 @@ class MakeAFace():
         self.run_main_loop()
     
     # class methods
+<<<<<<< HEAD
 
     # HELPER COPY
     def create_video_writer(video_cap, output_filename):
@@ -139,6 +143,8 @@ class MakeAFace():
         return writer
     
     
+=======
+>>>>>>> EventHandlingReformatFunctions
     # FACE DET COPIES
     def softmax(x):
         exps = np.exp(x - np.max(x))  # Subtract max for numerical stability
@@ -339,7 +345,11 @@ class MakeAFace():
                 cv2.putText(frame, f"Prediction: {__class__.class_names[pred.argmax()]}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
                 cv2.putText(frame, f"Certainty: {round(pred.max()*100, 2)}%", (10,65), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
                 # show the frame to our screen
+<<<<<<< HEAD
                 self.writer.write(frame)
+=======
+                #self.writer.write(frame)
+>>>>>>> EventHandlingReformatFunctions
                 ### end of face det copy
                                 
                 if self.show_black_screen != True:
