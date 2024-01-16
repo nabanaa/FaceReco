@@ -4,13 +4,13 @@ Narzędzie do wykrywania i katalogowania twarzy w obrazach. Wykorzystuje bibliot
 
 ## Instalacja
 
-Aby móc pobrać repozytorium, należy posiadać rozszrzenie git lfs.
+Aby móc pobrać repozytorium, należy posiadać rozszrzenie [Git LFS](https://github.com/git-lfs/git-lfs).
 
 - Linux:
   - Menedżer pakietów dystrybucji: np. `apt-get install git-lfs`
 - Windows:
 
-  - Oficjalny instalator: [Git LFS](https://git-lfs.github.com/)
+  - [Oficjalny instalator](https://git-lfs.github.com/)
 
 - MacOS:
   - Menedżer pakietów Homebrew: `brew install git-lfs`
