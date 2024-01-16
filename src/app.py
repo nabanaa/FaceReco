@@ -40,8 +40,9 @@ class MakeAFace():
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         # VIDEO 
         self.video_playing = False
-        self.CAM_HEIGHT = 640
-        self.CAM_WIDTH = 480
+        # TO BE MODIFIED,
+        self.CAM_HEIGHT = int(self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.CAM_WIDTH = int(self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 
         # TIMER
         self.start_time = 0
