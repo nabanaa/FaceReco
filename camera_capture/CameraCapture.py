@@ -88,7 +88,6 @@ while True:
         P2 = (x+w+offset if x+w+offset <= xw else xw, y+h+offset if y+h+offset <= yw else yw)
         cv2.rectangle(frame, P1, P2, (255, 0, 0), 1)
         f_im = frame[y-offset:y+h+offset, x-offset:x+w+offset, :]
-        print(frame.shape)
         back_color = (255,255,255)
         font_color = (0,0,0)
         cv2.rectangle(frame, (0, 0), (640, 20), back_color, -1)
