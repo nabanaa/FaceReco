@@ -4,8 +4,6 @@ ipywidgets==8.1.1
 matplotlib==3.6.0
 numpy==1.23.3
 pandas==2.1.4
-Pillow==10.0.1
-Pillow==9.2.0
 Pillow==10.2.0
 protobuf==4.25.1
 PySimpleGUI==4.60.5
