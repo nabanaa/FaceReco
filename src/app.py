@@ -236,6 +236,9 @@ class MakeAFace():
             self.window['-HIGHSCORES-'].Update(menu_definition=dict_to_list)
         self.window['-NO_AHEAGO-'].Update(visible=True)
     
+    def classify_face(self, face_img):
+        return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
+    
     def run_main_loop(self):
         # EVENTS
         while True:
@@ -313,10 +316,8 @@ class MakeAFace():
                 H,W = self.interpreter.get_input_details()[0]['shape'][1:3]
                 # WIP culprit
                 resized_face = cv2.resize(f_im, (W, H))
-                def classify_face(face_img):
-                    return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
                 
-                pred = classify_face(resized_face)
+                pred = self.classify_face(resized_face)
                 pred.argmax()
                 # print(f"Time to process 1 frame: {total * 1000:.0f} milliseconds")
                 cv2.putText(frame, f"Prediction: {__class__.class_names[pred.argmax()]}", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
