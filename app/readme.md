@@ -30,4 +30,4 @@ Po zakończeniu każdej rundy, wynik zostanie zapisany, a najlepsze wyniki będ�
 
 W aplikacji znajduje się również możliwość wyłączenia kategorii "Ahegao" za pomocą opcji No-Ahegao. Wprowadź imię gracza w polu Player przed rozpoczęciem gry.
 
-![A very surprised man](images/surprise_maf.png "Title")
+![A very surprised man](/images/surprise_maf.png "Title")
