@@ -1,12 +1,14 @@
-# App
+# Make a Face
+
 ### Aplikacja Make-A-Face - gra w "robienie twarzy"
-Gra polegająca wykonywaniu ekspresji  które podaje nam gra u góry ekranu. Jeśli wykonamy ekspresję która odpowiada tej o którą prosiła nas aplikacja, zostanie naliczony nam punkt. Jako gracz próbujemy skumulować jak najwięcej punktów w trakcie 20 sekund.
+
+Gra polegająca wykonywaniu ekspresji które podaje nam gra u góry ekranu. Jeśli wykonamy ekspresję która odpowiada tej o którą prosiła nas aplikacja, zostanie naliczony nam punkt. Jako gracz próbujemy skumulować jak najwięcej punktów w trakcie 20 sekund.
 
 ## Instalacja
 
 Aby zainstalować wymagane biblioteki, należy użyć polecenia:
 
-```pip install -r requirements.txt```
+`pip install -r requirements.txt`
 
 ### Wymagania
 
