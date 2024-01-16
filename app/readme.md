@@ -29,3 +29,5 @@ Po naciśnięciu przycisku Play, gra zostaje uruchomiona, a detekcja twarzy rozp
 Po zakończeniu każdej rundy, wynik zostanie zapisany, a najlepsze wyniki będą dostępne w sekcji Highscores. Aby zakończyć grę, użyj przycisku zamykania okna.
 
 W aplikacji znajduje się również możliwość wyłączenia kategorii "Ahegao" za pomocą opcji No-Ahegao. Wprowadź imię gracza w polu Player przed rozpoczęciem gry.
+
+![A very surprised man](images/surprise_maf.png "Title")
