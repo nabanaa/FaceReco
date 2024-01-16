@@ -334,7 +334,7 @@ class MakeAFace():
                         self.window['-IMAGE-'].update(data=imgbytes)
                 else:
                     # change the screen to all black
-                    shape = (480, 640, 3)
+                    shape = (self.CAM_HEIGHT, self.CAM_WIDTH, 3)
                     zeros_array = np.zeros(shape, dtype=np.uint8)
                     imgbytes = cv2.imencode('.png', zeros_array)[1].tobytes()
                     self.window['-IMAGE-'].update(data=imgbytes)
