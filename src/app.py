@@ -312,7 +312,7 @@ class MakeAFace():
                 y if y >= 0 else 0
                 xw = x+w if x+w <= self.CAM_WIDTH else self.CAM_WIDTH
                 yh = y+h if y+h <= self.CAM_HEIGHT else self.CAM_HEIGHT
-                f_im = frame[x:xw, y:yh, :]
+                f_im = frame[y:yh, x:xw, :]
                 # print(f_im.shape)
                 H,W = self.interpreter.get_input_details()[0]['shape'][1:3]
                 # WIP culprit
