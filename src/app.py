@@ -43,6 +43,8 @@ class MakeAFace():
         # TO BE MODIFIED,
         self.CAM_HEIGHT = int(self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.CAM_WIDTH = int(self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        
+        self.H,self.W = self.interpreter.get_input_details()[0]['shape'][1:3]
 
         # TIMER
         self.start_time = 0
@@ -313,10 +315,9 @@ class MakeAFace():
                 xw = x+w if x+w <= self.CAM_WIDTH else self.CAM_WIDTH
                 yh = y+h if y+h <= self.CAM_HEIGHT else self.CAM_HEIGHT
                 f_im = frame[y:yh, x:xw, :]
-                # print(f_im.shape)
-                H,W = self.interpreter.get_input_details()[0]['shape'][1:3]
+                
                 # WIP culprit
-                resized_face = cv2.resize(f_im, (W, H))
+                resized_face = cv2.resize(f_im, (self.W, self.H))
                 
                 pred = self.classify_face(resized_face)
                 pred.argmax()
