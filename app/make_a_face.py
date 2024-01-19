@@ -28,7 +28,7 @@ class MakeAFace():
     # instance attributes
     def __init__(self):    
         # initialize the video capture object
-        self.video_cap = cv2.VideoCapture(0)
+        self.video_cap = cv2.VideoCapture(1)
         # initialize the video writer object
         
         file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "lite_emotions_model_efficientnet_b0.tflite")
