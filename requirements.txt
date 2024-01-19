@@ -3,4 +3,5 @@ numpy==1.26.3
 Pillow==10.2.0
 PySimpleGUI==4.60.5
 tensorflow==2.15.0
-opencv-python==4.9.0
+opencv-python==4.9.0.80
+
