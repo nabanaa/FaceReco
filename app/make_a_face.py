@@ -75,7 +75,7 @@ class MakeAFace():
         self.new_face_prompt = False
         self.current_rolled_class = ''
         self.score_str = 'Score: '
-        self.round_duration = 20;
+        self.round_duration = 20
 
         #"name": highscore
         self.player_data_dict = {}
