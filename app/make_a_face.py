@@ -7,16 +7,12 @@ from tensorflow import keras
 import numpy as np
 import random
 
-#
-# work in progress
-#
-# game is 'playable'
 # 
 # make faces to score points
 #
 
 class MakeAFace():
-   # class attributes
+    # class attributes
     
     # define some constants
     CONFIDENCE_THRESHOLD = 0.7
@@ -26,26 +22,19 @@ class MakeAFace():
     class_names=["Ahegao", "Angry", "Happy", "Neutral", "Sad", "Surprised"]
     
     # instance attributes
-    def __init__(self):    
+    def __init__(self):
         # initialize the video capture object
         self.video_cap = cv2.VideoCapture(0)
-        # initialize the video writer object
         
-        file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "lite_emotions_model_efficientnetv2-b0-21k-ft1k_adam.tflite")
-        with open(file_path, "rb") as f:
-            self.lite_model_content = f.read()
-            
-        self.interpreter = tf.lite.Interpreter(model_content=self.lite_model_content)
         # Load the cascade
-        # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         # VIDEO 
         self.video_playing = False
         # TO BE MODIFIED,
         self.CAM_HEIGHT = int(self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.CAM_WIDTH = int(self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         
-        self.H,self.W = self.interpreter.get_input_details()[0]['shape'][1:3]
 
         # TIMER
         self.start_time = 0
@@ -85,10 +74,13 @@ class MakeAFace():
 
         self.end_screen = False
             
-        # STATES
-        self.STATE_START_SC = 0
-        self.STATE_PLAY_SC = 1
-        self.STATE_PAUSE_SC = 2        
+        # MODELS        
+        self.models_list = self.get_model_names()
+        
+        
+        ### load and initialize default model
+        self.current_model = "lite_emotions_model_efficientnetv2-b0-21k-ft1k_adam.tflite"
+        self.load_and_init_current_model(current_model=self.current_model)
         
 
         # GUI 
@@ -108,7 +100,9 @@ class MakeAFace():
                 sg.Button('New Game', key='-NEW_GAME-',visible=False,size=(7,3)),
                 sg.Input('Player', key='-PLAYER_NAME-',visible=True,size=(20,2)),
                 sg.ButtonMenu("Highscores", ["", "empty"], key='-HIGHSCORES-'),
-                sg.Checkbox("No-Aheago", key='-NO_AHEAGO-',visible=True,background_color='white',text_color='black')
+                sg.ButtonMenu("Models", ["", self.get_model_names()], key='-MODELS-'),
+                sg.ButtonMenu("Current Model", ["", self.current_model], key='-CURRENT_MODEL-'),
+                sg.Checkbox("No-Aheago", key='-NO_AHEAGO-',visible=True,background_color='white',text_color='black'),
             ]          
             ]
         
@@ -120,7 +114,7 @@ class MakeAFace():
             dict_to_list = []
             for key, value in self.player_data_dict.items():
                 dict_to_list.append(f"{key}: {value}")
-            dict_to_list = ["highscores",dict_to_list]
+            dict_to_list = ["Highscores",dict_to_list]
             self.window['-HIGHSCORES-'].Update(menu_def=dict_to_list)
         
         self.run_main_loop()
@@ -141,9 +135,34 @@ class MakeAFace():
     
     
     # instance methods
+    def change_current_model(self, values):
+        self.current_model = ["Current Model",values['-MODELS-']]
+        self.window['-CURRENT_MODEL-'].Update(menu_definition=self.current_model)
+    
+    def load_models(self):
+        """
+        Allows for hot reload of models, not used yet tho
+        """
+        update_list = ["Models", self.get_model_names()]
+        self.window['-MODELS-'].Update(menu_definition=update_list)
+    
+    def load_and_init_current_model(self, current_model="lite_emotions_model_efficientnetv2-b0-21k-ft1k_adam.tflite"):
+        file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", current_model)
+        with open(file_path, "rb") as f:
+            self.lite_model_content = f.read()
+            
+        self.interpreter = tf.lite.Interpreter(model_content=self.lite_model_content)
+        self.H,self.W = self.interpreter.get_input_details()[0]['shape'][1:3]
+        
+    
+    def get_model_names(self):
+        return os.listdir(os.path.join(os.path.dirname(os.path.dirname(__file__)), "models",))
+    
     def handle_start(self, values):
         self.pause_active = False
         self.window['-PAUSE-'].Update('Pause')
+        self.window['-MODELS-'].Update(visible=False)
+        self.window['-CURRENT_MODEL-'].Update(visible=False)
         self.window['-NO_AHEAGO-'].Update(visible=False)
         self.window['-SCORE-'].Update(visible=True)
         self.window['-HIGHSCORES-'].Update(visible=False)
@@ -238,7 +257,13 @@ class MakeAFace():
             
             dict_to_list = ["highscores",dict_to_list]
             self.window['-HIGHSCORES-'].Update(menu_definition=dict_to_list)
+        # hot reload the models
+        self.load_models()
+        # show again the buttons
+        self.window['-MODELS-'].Update(visible=True)
+        self.window['-CURRENT_MODEL-'].Update(visible=True)
         self.window['-NO_AHEAGO-'].Update(visible=True)
+        
     
     def classify_face(self, face_img):
         return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
@@ -256,9 +281,12 @@ class MakeAFace():
                 self.handle_pause()
             elif event == '-NEW_GAME-':
                 self.handle_new_game()
-                
-                
-            #### options
+            elif event == '-MODELS-':
+                self.change_current_model(values)
+                self.load_and_init_current_model()
+            
+            
+            
                 
                 
             if self.timer_active == True:
