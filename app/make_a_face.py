@@ -31,13 +31,14 @@ class MakeAFace():
         self.video_cap = cv2.VideoCapture(0)
         # initialize the video writer object
         
-        file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "lite_emotions_model_efficientnet_b0.tflite")
+        file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "lite_emotions_model_efficientnetv2-b0-21k-ft1k_adam.tflite")
         with open(file_path, "rb") as f:
             self.lite_model_content = f.read()
             
         self.interpreter = tf.lite.Interpreter(model_content=self.lite_model_content)
         # Load the cascade
-        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         # VIDEO 
         self.video_playing = False
         # TO BE MODIFIED,
