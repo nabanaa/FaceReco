@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+Faces/
+.vscode/
+
+# macOS
+.DS_Store
