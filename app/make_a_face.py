@@ -65,7 +65,7 @@ class MakeAFace():
         self.new_face_prompt = False
         self.current_rolled_class = ''
         self.score_str = 'Score: '
-        self.round_duration = 20;
+        self.round_duration = 20
 
         #"name": highscore
         self.player_data_dict = {}
@@ -79,7 +79,7 @@ class MakeAFace():
         
         
         ### load and initialize default model
-        self.current_model = "lite_emotions_model_efficientnetv2-b0-21k-ft1k_adam.tflite"
+        self.current_model = self.get_model_names()[0]
         self.load_and_init_current_model(current_model=self.current_model)
         
 
