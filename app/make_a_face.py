@@ -79,9 +79,13 @@ class MakeAFace():
         
         
         ### load and initialize default model
+        models = self.get_model_names()
+        if len(models) == 0:
+            print("No Models were found, please upload models to ../Models")
+            return
         self.current_model = self.get_model_names()[0]
         self.load_and_init_current_model(current_model=self.current_model)
-        
+
 
         # GUI 
         sg.theme('black')
