@@ -196,6 +196,11 @@ class MakeAFace():
                 self.player_data_dict.update({values['-PLAYER_NAME-']:0})
                 
             self.current_player = values['-PLAYER_NAME-']
+                
+        if self.show_new_game == True and self.new_game_button_added == False:
+                    self.new_game_button_added = True
+                    self.window['-NEW_GAME-'].update(visible=True)
+                
             
     def handle_pause(self):
         if self.pause_active == False:
@@ -276,26 +281,8 @@ class MakeAFace():
     def classify_face(self, face_img):
         return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
     
-    def run_main_loop(self):
-        # EVENTS
-        while True:
-            event, values = self.window.read(timeout=10)
-                
-            if event == sg.WIN_CLOSED:
-                break
-            elif event == '-START-':
-                self.handle_start(values)    
-            elif event == '-PAUSE-':
-                self.handle_pause()
-            elif event == '-NEW_GAME-':
-                self.handle_new_game()
-            elif event == '-MODELS-':
-                self.change_current_model(values)
-                self.load_and_init_current_model()
-            
-            
-            
-            if self.timer_active == True:
+    def handle_timer(self):
+        if self.timer_active == True:
                 ### WIP
                 # print(str(self.total_paused_correction_time) + "    " + str(time() - self.start_time))
                 elapsed_time = round(self.round_duration - (time() - self.start_time - self.total_paused_correction_time), 1)
@@ -313,14 +300,9 @@ class MakeAFace():
                     self.handle_new_game()
                     self.window['-FACE_PROMPT-'].Update(f"{cache_player} scored: {cache_score} in {cache_duration} seconds!")
                     self.end_screen = True
-                    
-                                    
-                
-            if self.show_new_game == True and self.new_game_button_added == False:
-                self.new_game_button_added = True
-                self.window['-NEW_GAME-'].update(visible=True)
-                
-            # if self.video_playing:
+
+    def handle_video(self):
+        # if self.video_playing:
             if True:
                 ret, frame = self.video_cap.read()
                 
@@ -342,7 +324,7 @@ class MakeAFace():
                 # Display the output
                 # print(faces[0])
                 if not np.any(faces):
-                    continue
+                    return
                 (x, y, w, h) = faces[0]
                 ### make sure there are no out of bounds errors
                 x if x >= 0 else 0
@@ -397,6 +379,28 @@ class MakeAFace():
             else:
                 if self.end_screen == False:
                     self.window['-FACE_PROMPT-'].update("")
+                     
+    
+    def run_main_loop(self):
+        # EVENTS
+        while True:
+            event, values = self.window.read(timeout=10)
+                
+            if event == sg.WIN_CLOSED:
+                break
+            elif event == '-START-':
+                self.handle_start(values)    
+            elif event == '-PAUSE-':
+                self.handle_pause()
+            elif event == '-NEW_GAME-':
+                self.handle_new_game()
+            elif event == '-MODELS-':
+                self.change_current_model(values)
+                self.load_and_init_current_model()
+
+            self.handle_timer()
+            # this reformat was of questionable nature
+            self.handle_video()
                 
                 
         # close cv2
