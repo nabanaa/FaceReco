@@ -82,8 +82,12 @@ class MakeAFace():
         models = self.get_model_names()
         if len(models) == 0:
             print("No Models were found, please upload models to ../Models")
-            return
-        self.current_model = self.get_model_names()[0]
+            return None # exit
+        # the following if was added to combat the lfs data quota issue
+        if models.index("default_lite_emotions_model_efficientnet_b0_prev.tflite") != -1:
+            self.current_model = "default_lite_emotions_model_efficientnet_b0_prev.tflite"
+        else:
+            self.current_model = self.get_model_names()[0]
         self.load_and_init_current_model(current_model=self.current_model)
 
 
@@ -291,8 +295,6 @@ class MakeAFace():
             
             
             
-                
-                
             if self.timer_active == True:
                 ### WIP
                 # print(str(self.total_paused_correction_time) + "    " + str(time() - self.start_time))
