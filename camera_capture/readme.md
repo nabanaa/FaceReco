@@ -12,7 +12,7 @@ Aby zainstalować wymagane biblioteki, należy użyć polecenia:
 
 ### Wymagania
 
-- Python 3.11+
+- Python 3.9+
 - Pip
 
 ## Użycie
