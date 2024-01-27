@@ -29,13 +29,13 @@ class MakeAFace():
         # Load the cascade
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         # self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        
         # VIDEO 
         self.video_playing = False
         # TO BE MODIFIED,
         self.CAM_HEIGHT = int(self.video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.CAM_WIDTH = int(self.video_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         
-
         # TIMER
         self.start_time = 0
         self.timer_active = False
@@ -93,7 +93,7 @@ class MakeAFace():
 
         # GUI 
         sg.theme('black')
-        # sg.set_options(button_element_size=(6,3))
+
         self.layout = [
             [sg.Text('', key='-FACE_PROMPT-',font=('Helvetica', 20, 'bold'), text_color='red')],             # face to be made
             [sg.VPush()],                                   # blank space
@@ -112,7 +112,7 @@ class MakeAFace():
                 sg.ButtonMenu("Current Model", ["", self.current_model], key='-CURRENT_MODEL-'),
                 sg.Checkbox("No-Aheago", key='-NO_AHEAGO-',visible=True,background_color='white',text_color='black'),
             ]          
-            ]
+        ]
         
         
         self.window_size_x, self.window_size_y = 800, 650
@@ -276,7 +276,6 @@ class MakeAFace():
         self.window['-MODELS-'].Update(visible=True)
         self.window['-CURRENT_MODEL-'].Update(visible=True)
         self.window['-NO_AHEAGO-'].Update(visible=True)
-        
     
     def classify_face(self, face_img):
         return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
@@ -379,8 +378,7 @@ class MakeAFace():
             else:
                 if self.end_screen == False:
                     self.window['-FACE_PROMPT-'].update("")
-                     
-    
+                      
     def run_main_loop(self):
         # EVENTS
         while True:
@@ -400,8 +398,7 @@ class MakeAFace():
 
             self.handle_timer()
             # this reformat was of questionable nature
-            self.handle_video()
-                
+            self.handle_video()                
                 
         # close cv2
         self.video_cap.release()
@@ -410,8 +407,6 @@ class MakeAFace():
 
         # close pysimplegui
         self.window.close()
-
-
 
 app = MakeAFace()
 
