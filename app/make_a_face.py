@@ -123,10 +123,7 @@ class MakeAFace():
             for key, value in self.player_data_dict.items():
                 dict_to_list.append(f"{key}: {value}")
             dict_to_list = ["Highscores",dict_to_list]
-            self.window['-HIGHSCORES-'].Update(menu_def=dict_to_list)
-        
-        self.run_main_loop()
-    
+            self.window['-HIGHSCORES-'].Update(menu_def=dict_to_list)    
     # class methods
     # FACE DET COPIES
     def softmax(x):
@@ -139,6 +136,7 @@ class MakeAFace():
         interpreter.allocate_tensors()
         interpreter.set_tensor(interpreter.get_input_details()[0]['index'], images)
         interpreter.invoke()
+        # print(interpreter.get_tensor(interpreter.get_output_details()[0]['index']))
         return interpreter.get_tensor(interpreter.get_output_details()[0]['index'])
     
     
@@ -409,4 +407,4 @@ class MakeAFace():
         self.window.close()
 
 app = MakeAFace()
-
+app.run_main_loop()
