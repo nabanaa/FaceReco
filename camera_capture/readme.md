@@ -2,7 +2,7 @@
 
 ### Narzędzie do wykrywania i katalogowania twarzy
 
-Narzędzie do wykrywania i katalogowania twarzy w obrazach. Wykorzystuje bibliotekę OpenCV do wykrywania twarzy, a następnie zapisuje je w bazie danych.
+Narzędzie do wykrywania i katalogowania twarzy w obrazach. Wykorzystuje bibliotekę OpenCV do wykrywania twarzy, a następnie zapisuje je na dysku użytkownika.
 
 ## Instalacja
 
@@ -34,3 +34,4 @@ Kolejno:
 - `q - zakończenie działania programu`
 
 Po użyciu odpowiedniego klawisza zdjęcie jest zrobione natychmiastowo i zapisane w odpowiednim folderze. Po zakończeniu pracy należy wcisnąć klawisz q, aby zakończyć działanie programu.
+Do stworzenia własnego zbioru danych treningowych, należy ręcznie wgrać zdjęcia na Dysk Google, a następnie skorzystać z notatnika **TrainYourOwnModel.ipynb**.
