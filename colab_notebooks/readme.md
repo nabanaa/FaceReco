@@ -5,3 +5,4 @@
 ## [HVSM - zapis do arkusza Google](https://colab.research.google.com/github/nabanaa/FaceReco/blob/main/colab_notebooks/colab_hvsm.ipynb)
 
 ## [Trenuj własny model](https://colab.research.google.com/github/nabanaa/FaceReco/blob/main/colab_notebooks/TrainYourOwnModel.ipynb)
+[Source](https://www.tensorflow.org/hub/tutorials/tf2_image_retraining?hl=pl)
