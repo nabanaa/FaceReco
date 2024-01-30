@@ -24,6 +24,15 @@ Aby zainstalować wymagane biblioteki, należy użyć polecenia:
 
 `pip install -r requirements.txt`
 
+## Zdobycie modeli
+
+Aby pobrać modele, należy użyć polecenia:
+
+- Unix:
+  - `./get_models.sh`
+- Windows:
+  - `get_models.ps1`
+
 ### Wymagania
 
 - Python 3.11+
