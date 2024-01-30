@@ -2,6 +2,6 @@ __pycache__/
 *.pyc
 Faces/
 .vscode/
-
+.venv/
 # macOS
 .DS_Store
