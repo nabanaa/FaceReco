@@ -6,3 +6,4 @@ venv/env
 .venv/
 # macOS
 .DS_Store
+models/

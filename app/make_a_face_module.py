@@ -3,7 +3,6 @@ from time import time
 import cv2
 import os
 import tensorflow as tf
-from tensorflow import keras
 import numpy as np
 import random
 
@@ -189,18 +188,18 @@ class MakeAFace():
             
             ### select current player, initialize player data array
             
-            if self.player_data_dict.get(values['-PLAYER_NAME-']) == None:
+            if self.player_data_dict.get(values['-PLAYER_NAME-']) is None:
                 self.player_data_dict.update({values['-PLAYER_NAME-']:0})
                 
             self.current_player = values['-PLAYER_NAME-']
                 
-        if self.show_new_game == True and self.new_game_button_added == False:
+        if self.show_new_game and not self.new_game_button_added:
                     self.new_game_button_added = True
                     self.window['-NEW_GAME-'].update(visible=True)
                 
             
     def handle_pause(self):
-        if self.pause_active == False:
+        if not self.pause_active:
             # pause
             self.window['-PAUSE-'].Update('Unpause')
             self.timer_active = False
@@ -243,7 +242,7 @@ class MakeAFace():
         
         ### the new game button triggers pause if it was not triggered before
         ### and it also shows the player name input again, so the player can be changed 
-        if self.pause_active == False:
+        if not self.pause_active:
             # pause
             self.window['-PAUSE-'].Update('Pause')
             self.timer_active = False
@@ -279,7 +278,7 @@ class MakeAFace():
         return __class__.softmax(__class__.lite_model(face_img[None, ...].astype(np.float32)/255, self.interpreter)[0])
     
     def handle_timer(self):
-        if self.timer_active == True:
+        if self.timer_active:
                 ### WIP
                 # print(str(self.total_paused_correction_time) + "    " + str(time() - self.start_time))
                 elapsed_time = round(self.round_duration - (time() - self.start_time - self.total_paused_correction_time), 1)
@@ -342,7 +341,7 @@ class MakeAFace():
                 #self.writer.write(frame)
                 ### end of face det copy
                                 
-                if self.show_black_screen != True:
+                if not self.show_black_screen:
                     if self.video_playing:
                         imgbytes = cv2.imencode('.png', frame)[1].tobytes()
                         self.window['-IMAGE-'].update(data=imgbytes)
@@ -359,8 +358,8 @@ class MakeAFace():
                     self.window['-SCORE-'].update(self.score_str + str(self.score))
                     self.new_face_prompt = True
                 
-            if self.start_showing_face_prompts == True:
-                if self.new_face_prompt == True:
+            if self.start_showing_face_prompts:
+                if self.new_face_prompt:
                     self.new_face_prompt = False
                     if self.window['-NO_AHEAGO-'].get():
                         rolled_class_idx = random.randint(1,5)
@@ -374,7 +373,7 @@ class MakeAFace():
                     self.prev_rolled_class = rolled_class_idx
                     self.window['-FACE_PROMPT-'].update(self.face_prompt_str + self.current_rolled_class)
             else:
-                if self.end_screen == False:
+                if not self.end_screen:
                     self.window['-FACE_PROMPT-'].update("")
                       
     def run_main_loop(self):
