@@ -35,6 +35,6 @@ Aby pobrać modele, należy użyć polecenia:
 
 ### Wymagania
 
-- Python 3.11+
+- Python `3.9` - `3.11`
 - Pip
 - Wszystko z `requirements.txt`

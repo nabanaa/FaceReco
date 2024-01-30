@@ -22,6 +22,7 @@ def create_video_writer(video_cap, output_filename):
 
     return writer
 
+
 video_cap = cv2.VideoCapture(0)
 
 # creating folders for faces
