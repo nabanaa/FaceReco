@@ -1,6 +1,6 @@
 # Narzędzie do wykrywania i katalogowania twarzy
 
-Narzędzie do wykrywania i katalogowania twarzy w obrazach. Wykorzystuje bibliotekę OpenCV do wykrywania twarzy, a następnie zapisuje je w bazie danych.
+Narzędzie do wykrywania i rozpoznawania mimiki twarzy w obrazach. Wykorzystuje bibliotekę OpenCV do wykrywania twarzy, a następnie zwraca predykcję emocji.
 
 ## Instalacja
 
